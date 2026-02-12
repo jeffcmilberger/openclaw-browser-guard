@@ -104,11 +104,15 @@ const EXECUTABLE_PATTERNS = [
 // Payment-related selectors/text
 const PAYMENT_INDICATORS = [
   /pay\s*now/i,
+  /pay\s*\$?\d/i,        // "Pay $100", "Pay 50"
   /place\s*order/i,
   /complete\s*purchase/i,
   /submit\s*payment/i,
   /buy\s*now/i,
+  /buy\s*for\s*\$/i,     // "Buy for $X"
   /checkout/i,
+  /confirm\s*payment/i,
+  /process\s*payment/i,
 ];
 
 // ============================================================================
