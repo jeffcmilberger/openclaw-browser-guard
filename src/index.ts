@@ -21,6 +21,25 @@ export type { SitemapEntry, SitePolicy, PolicyRule, HttpRequest, FilterDecision 
 // DAG building
 export { buildDAG, validateDAG, describePlan, serializeDAG } from './planner/dag-builder.js';
 
+// LLM-based planning
+export {
+  LLMPlanner,
+  PlanGenerationError,
+  DAG_SCHEMA,
+  PLANNER_SYSTEM_PROMPT,
+  buildPlannerPrompt,
+  validateLLMResponse,
+  extractDAGFromResponse,
+  generatePlanWithLLM,
+} from './planner/llm-planner.js';
+export type {
+  LLMProvider,
+  LLMPlannerOptions,
+  GeneratePlanRequest,
+  GeneratePlanResponse,
+  PlanResult,
+} from './planner/llm-planner.js';
+
 // Executor
 export { SecureExecutor, MockBrowserAdapter } from './executor/runtime.js';
 export type { BrowserAdapter, ExecutorConfig } from './executor/runtime.js';
