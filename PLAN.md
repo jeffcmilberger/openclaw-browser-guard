@@ -294,12 +294,74 @@ export const browserGuardHook: ToolHook = {
 2. **Protection against all side channels**: Timing attacks, etc. out of scope
 3. **Protection if plan is wrong**: Garbage in, garbage out
 
+## Production Patterns (from arXiv:2511.19477)
+
+Based on "Building Browser Agents: Architecture, Security, and Practical Solutions":
+
+### Key Insight
+> "Model capability does not limit agent performance; architectural decisions determine success or failure."
+
+### Element Reference Versioning
+
+Problem: A "Cancel" button with ref=10 might become "Delete" after page update.
+
+Solution: Version all refs as `snapshotVersion:elementRef` (e.g., `3:42`).
+```typescript
+// Validate before execution
+if (requestedVersion !== currentVersion) {
+  return { error: "Stale ref - page state changed" };
+}
+```
+
+### Bulk Actions
+
+Results from production testing:
+- 74% fewer tool calls (10 vs 38)
+- 57% faster (104.5s vs 245.1s)
+- 41% fewer tokens (154K vs 260K)
+
+```json
+{
+  "bulkActions": [
+    { "type": "type", "ref": "3:10", "text": "hello" },
+    { "type": "type", "ref": "3:11", "text": "world" },
+    { "type": "click", "ref": "3:15" }
+  ]
+}
+```
+
+### Semantic Safety Blocking
+
+Block actions based on element labels - only works with accessibility trees:
+```typescript
+const SENSITIVE_PATTERNS = [
+  /\bdelete\b/i,
+  /\brefund\b/i,
+  /\bpay\s*now\b/i,
+  /\btransfer\s*(funds|money)\b/i,
+];
+```
+
+### Hybrid Context (Accessibility + Vision)
+
+- **Primary**: Accessibility tree snapshots (compact, semantic)
+- **Secondary**: Vision/screenshots (for canvas, non-accessible elements)
+- Pure vision fails on dense UIs (date pickers, grids)
+- Pure DOM is too verbose
+
+### Context Trimming
+
+- Only retain most recent snapshot (not full history)
+- Trim large snapshots with explicit indicators
+- ~50K char limit per snapshot
+
 ## References
 
 1. Meng et al. "ceLLMate: Sandboxing Browser AI Agents" (arXiv:2512.12594)
-2. Foerster et al. "CaMeLs Can Use Computers Too" (arXiv:2601.09923)  
-3. Debenedetti et al. "AgentDojo: Benchmarking AI Agents" (2024)
-4. Original CaML paper (arXiv:2503.18813)
+2. Foerster et al. "CaMeLs Can Use Computers Too" (arXiv:2601.09923)
+3. Vardanyan et al. "Building Browser Agents: Architecture, Security, and Practical Solutions" (arXiv:2511.19477)
+4. Debenedetti et al. "AgentDojo: Benchmarking AI Agents" (2024)
+5. Original CaML paper (arXiv:2503.18813)
 
 ## License
 
