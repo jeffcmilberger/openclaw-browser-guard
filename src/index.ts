@@ -50,5 +50,13 @@ export type { BulkAction, BulkActionResult, BulkExecutionResult, BulkExecutionSt
 export { BrowserGuardPlugin, createPlugin } from './hooks/openclaw-plugin.js';
 export type { BrowserGuardConfig } from './hooks/openclaw-plugin.js';
 
+// OpenClaw Browser Adapter
+export { OpenClawBrowserAdapter, createAdapterFromInvoker } from './adapters/openclaw-browser.js';
+export type { OpenClawBrowserRequest, OpenClawSnapshotResponse, BrowserToolInvoker } from './adapters/openclaw-browser.js';
+
+// Web Fetch Guard
+export { WebFetchGuard, WebFetchBlockedError, createWebFetchHook } from './adapters/web-fetch-guard.js';
+export type { WebFetchRequest, WebFetchGuardConfig, GuardResult } from './adapters/web-fetch-guard.js';
+
 // Default export is the plugin creator
 export { createPlugin as default } from './hooks/openclaw-plugin.js';
