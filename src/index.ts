@@ -14,6 +14,10 @@ export { parseIntent, validateIntent } from './core/task-parser.js';
 // Policy engine
 export { PolicyEngine, parseSitePolicies } from './policy/engine.js';
 
+// HTTP filter (ceLLMate-style)
+export { HttpFilter, createFilterFromIntent } from './policy/http-filter.js';
+export type { SitemapEntry, SitePolicy, PolicyRule, HttpRequest, FilterDecision } from './policy/http-filter.js';
+
 // DAG building
 export { buildDAG, validateDAG, describePlan, serializeDAG } from './planner/dag-builder.js';
 

@@ -25,6 +25,10 @@ The core insight: **browsing is inherently multi-turn and observation-heavy**, w
 
 ## Architecture
 
+Combines two complementary approaches:
+1. **HTTP-level filtering** (from ceLLMate) - Controls what requests can be made
+2. **Action-level orchestration** (from CaML-CUA) - Controls what UI actions to perform
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                     TRUSTED ZONE                                │
@@ -32,31 +36,52 @@ The core insight: **browsing is inherently multi-turn and observation-heavy**, w
 │  │   Task       │───▶│   Planner    │───▶│  Execution   │      │
 │  │   Parser     │    │   (LLM)      │    │    DAG       │      │
 │  └──────────────┘    └──────────────┘    └──────────────┘      │
-│         │                                       │               │
-│         ▼                                       ▼               │
-│  ┌──────────────┐                       ┌──────────────┐       │
-│  │   Policy     │                       │   Executor   │       │
-│  │   Engine     │◀──────────────────────│   Runtime    │       │
-│  └──────────────┘                       └──────────────┘       │
-│         │                                       │               │
-└─────────│───────────────────────────────────────│───────────────┘
-          │                                       │
+│         │                   │                   │               │
+│         ▼                   ▼                   ▼               │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
+│  │   Policy     │    │    HTTP      │    │   Executor   │      │
+│  │   Engine     │◀──▶│   Filter     │◀──▶│   Runtime    │      │
+│  └──────────────┘    └──────────────┘    └──────────────┘      │
+│         │                   │                   │               │
+└─────────│───────────────────│───────────────────│───────────────┘
+          │                   │                   │
           │         ISOLATION BOUNDARY            │
-          │                                       │
-┌─────────│───────────────────────────────────────│───────────────┐
-│         ▼              UNTRUSTED ZONE           ▼               │
-│  ┌──────────────┐                       ┌──────────────┐       │
-│  │   Site       │                       │   Browser    │       │
-│  │   Policies   │                       │   / Fetch    │       │
-│  └──────────────┘                       └──────────────┘       │
-│                                                │                │
-│                                                ▼                │
-│                                         ┌──────────────┐       │
-│                                         │   Web        │       │
-│                                         │   Content    │       │
-│                                         └──────────────┘       │
+          │                   │                   │
+┌─────────│───────────────────│───────────────────│───────────────┐
+│         ▼                   ▼                   ▼               │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
+│  │   Site       │    │   Network    │    │   Browser    │      │
+│  │   Policies   │    │   Requests   │    │   DOM/UI     │      │
+│  └──────────────┘    └──────────────┘    └──────────────┘      │
+│                            │                    │               │
+│                            ▼                    ▼               │
+│                      ┌──────────────────────────────┐          │
+│                      │         Web Content          │          │
+│                      └──────────────────────────────┘          │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+### Defense Layers
+
+1. **Predicted Allowlist** (HTTP Filter)
+   - Domains derived from task intent
+   - Blocks requests to unexpected domains
+
+2. **Sitemap Matching** (HTTP Filter)
+   - Maps URLs + methods + bodies to semantic actions
+   - Based on ceLLMate's sitemap format
+
+3. **Policy Rules** (HTTP Filter)
+   - Allow/deny/allow_public per semantic action
+   - Site-authored and task-derived
+
+4. **Execution DAG** (Action Orchestration)
+   - Pre-computed action graph with branches
+   - No deviation from planned paths
+
+5. **Branch Steering Guard** (Action Orchestration)
+   - Validates observations match expectations
+   - Detects UI manipulation attempts
 
 ## Core Components
 
