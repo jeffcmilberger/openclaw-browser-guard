@@ -141,13 +141,14 @@ export interface PolicyRule {
 }
 
 export interface Policy {
-  rules: PolicyRule[];
-  
   /** Check if an action is allowed */
   allows(action: BrowserAction, context: ExecutionContext): PolicyDecision;
   
   /** Check if entire intent is allowed */
   allowsIntent(intent: BrowsingIntent): PolicyDecision;
+  
+  /** Get all rules (for inspection) */
+  getRules(): PolicyRule[];
 }
 
 export interface PolicyDecision {

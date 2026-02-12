@@ -20,7 +20,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "node --test --experimental-strip-types tests/*.test.ts",
+    "test": "node --test tests/*.test.ts",
     "lint": "eslint src/**/*.ts",
     "prepublishOnly": "npm run clean && npm run build"
   },

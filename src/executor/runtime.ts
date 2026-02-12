@@ -13,6 +13,7 @@ import type {
   ExecutionResult,
   ExecutionTraceEntry,
   Observation,
+  ObservedElement,
   Policy,
   BrowserAction,
   ExpectedOutcome,
@@ -399,7 +400,7 @@ export class SecureExecutor {
   /**
    * Simple selector matching (would need CSS selector parsing in production)
    */
-  private matchesSelector(element: Observation['elements'][0], selector: string): boolean {
+  private matchesSelector(element: ObservedElement, selector: string): boolean {
     // Very simplified - just check tag name and class/id patterns
     const selectorLower = selector.toLowerCase();
     
@@ -545,7 +546,7 @@ export class MockBrowserAdapter implements BrowserAdapter {
     return this.makeObservation();
   }
   
-  private elementMatchesSelector(element: Observation['elements'][0], selector: string): boolean {
+  private elementMatchesSelector(element: ObservedElement, selector: string): boolean {
     // Simplified matching
     return element.selector === selector || 
            element.tagName.toLowerCase() === selector.toLowerCase();
