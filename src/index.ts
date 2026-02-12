@@ -40,6 +40,26 @@ export type {
   PlanResult,
 } from './planner/llm-planner.js';
 
+// LLM Providers
+export {
+  OpenAIProvider,
+  createOpenAIProvider,
+  createAzureOpenAIProvider,
+  AnthropicProvider,
+  createAnthropicProvider,
+  CallableProvider,
+  createCallableProvider,
+  createMockProvider,
+  createLoggingProvider,
+  createCachingProvider,
+} from './planner/providers/index.js';
+export type {
+  OpenAIProviderConfig,
+  AnthropicProviderConfig,
+  CallableProviderConfig,
+  CompletionFunction,
+} from './planner/providers/index.js';
+
 // Executor
 export { SecureExecutor, MockBrowserAdapter } from './executor/runtime.js';
 export type { BrowserAdapter, ExecutorConfig } from './executor/runtime.js';
